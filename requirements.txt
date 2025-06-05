@@ -1,0 +1,28 @@
+# 유튜브 클립 생성 시스템 - 필수 패키지
+# 설치: pip install -r requirements.txt
+
+# YouTube 다운로드
+pytubefix>=7.0.0
+
+# 비디오/이미지 처리
+opencv-python>=4.5.0
+Pillow>=8.0.0
+
+# 설정 파일 및 데이터 처리
+PyYAML>=6.0
+numpy>=1.20.0
+
+# 파일 경로 처리 (Python 3.8+에서는 내장)
+pathlib>=1.0.1
+
+# 선택사항: 머신러닝 패키지 (주석 해제하여 설치)
+# torch>=1.10.0
+# torchvision>=0.11.0
+# librosa>=0.8.0
+# pandas>=1.3.0
+# matplotlib>=3.5.0
+# scikit-learn>=1.0.0
+
+# 선택사항: 개발 도구
+# jupyter>=1.0.0
+# ipython>=7.0.0
