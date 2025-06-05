@@ -62,6 +62,41 @@ def check_csv_status(csv_path):
     except Exception as e:
         return 'error'
 
+def time_to_seconds(time_str):
+    """
+    시간 문자열을 초로 변환
+    지원 형식:
+    - "11:08" → 668.0 (11분 8초)
+    - "1:23:45" → 5025.0 (1시간 23분 45초)
+    - "45.5" → 45.5 (이미 초 단위)
+    """
+    time_str = str(time_str).strip()
+    
+    if ':' in time_str:
+        parts = time_str.split(':')
+        if len(parts) == 2:  # mm:ss
+            minutes, seconds = parts
+            return int(minutes) * 60 + float(seconds)
+        elif len(parts) == 3:  # hh:mm:ss
+            hours, minutes, seconds = parts
+            return int(hours) * 3600 + int(minutes) * 60 + float(seconds)
+    
+    # 이미 초 단위거나 소수점 포함
+    return float(time_str)
+
+def normalize_label(label):
+    """라벨 정규화 (f/F/funny -> funny, n/N/normal -> normal)"""
+    if not label:
+        return None
+        
+    label = str(label).strip().lower()
+    if label in ['f', 'funny']:
+        return 'funny'
+    elif label in ['n', 'normal']:
+        return 'normal'
+    else:
+        return None
+
 def parse_csv_data(csv_path, config):
     """CSV 데이터 파싱 및 유효성 검사"""
     valid_clips = []
@@ -77,8 +112,9 @@ def parse_csv_data(csv_path, config):
                     continue
                 
                 try:
-                    start = float(row['start'])
-                    end = float(row['end'])
+                    # 시간 형식 지원 (11:08 또는 668)
+                    start = time_to_seconds(row['start'])
+                    end = time_to_seconds(row['end'])
                     label = normalize_label(row['label'])
                     
                     # 유효성 검사
@@ -114,19 +150,6 @@ def parse_csv_data(csv_path, config):
         return [], []
     
     return valid_clips, invalid_clips
-
-def normalize_label(label):
-    """라벨 정규화 (f/F/funny -> funny, n/N/normal -> normal)"""
-    if not label:
-        return None
-        
-    label = str(label).strip().lower()
-    if label in ['f', 'funny']:
-        return 'funny'
-    elif label in ['n', 'normal']:
-        return 'normal'
-    else:
-        return None
 
 def get_existing_clips(base_dir):
     """기존 클립 정보 스캔"""
