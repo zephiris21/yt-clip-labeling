@@ -85,28 +85,19 @@ def group_clips_by_video(clips_data):
     return dict(grouped)
 
 def check_existing_download(video_id, config):
-    """기존 다운로드 확인 (video_id와 safe_title 둘 다 확인)"""
-    base_dir = config['download']['base_directory']
+    """기존 다운로드 확인"""
+    video_dir = os.path.join(config['download']['base_directory'], video_id)
     
-    # 1. video_id 기반 폴더 확인 (기존 다운로드)
-    video_dir_by_id = os.path.join(base_dir, video_id)
-    if os.path.exists(video_dir_by_id):
-        video_files = glob.glob(os.path.join(video_dir_by_id, f"{video_id}_video.mp4"))
-        audio_files = glob.glob(os.path.join(video_dir_by_id, f"{video_id}_audio.*"))
-        if video_files and audio_files:
-            return True, video_files[0], audio_files[0], video_id
+    if not os.path.exists(video_dir):
+        return False, None, None, None
     
-    # 2. safe_title 기반 폴더들 확인 (새로운 방식)
-    for folder_name in os.listdir(base_dir):
-        folder_path = os.path.join(base_dir, folder_name)
-        if os.path.isdir(folder_path):
-            # 폴더 내에서 safe_title 기반 파일들 찾기
-            video_files = glob.glob(os.path.join(folder_path, f"{folder_name}_video.mp4"))
-            audio_files = glob.glob(os.path.join(folder_path, f"{folder_name}_audio.*"))
-            if video_files and audio_files:
-                # video_id가 일치하는지 확인 (URL에서 추출한 것과 비교)
-                # 실제로는 같은 영상인지 확실하지 않으니 폴더명을 반환
-                return True, video_files[0], audio_files[0], folder_name
+    # 비디오 파일 확인
+    video_files = glob.glob(os.path.join(video_dir, f"{video_id}_video.mp4"))
+    audio_files = glob.glob(os.path.join(video_dir, f"{video_id}_audio.*"))
+    
+    if video_files and audio_files:
+        # 기존 다운로드에서 제목 정보 가져오기 (파일명에서 추출은 복잡하므로 임시 제목 사용)
+        return True, video_files[0], audio_files[0], video_id
     
     return False, None, None, None
 
