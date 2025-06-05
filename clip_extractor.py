@@ -196,13 +196,15 @@ def create_clip(video_path, audio_path, clip_data, output_paths, config):
     duration = end - start
     
     try:
-        # 비디오 클립 생성
+        # 비디오 클립 생성 (정확한 시간 자르기)
         video_cmd = [
             'ffmpeg',
+            '-ss', str(start),        # 입력 전에 seek (더 정확)
             '-i', video_path,
-            '-ss', str(start),
             '-t', str(duration),
-            '-c:v', 'copy',
+            '-c:v', 'libx264',        # 재인코딩으로 정확한 시간
+            '-crf', '23',             # 품질 설정 (18-28, 23이 균형점)
+            '-preset', 'fast',        # 인코딩 속도 (fast/medium/slow)
             '-avoid_negative_ts', 'make_zero',
             '-y',
             output_paths['video']
