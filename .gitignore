@@ -56,3 +56,5 @@ desktop.ini
 
 # 개인 설정 (백업용으로 별도 관리)
 config_personal.yaml
+
+/backup_code
