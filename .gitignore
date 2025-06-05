@@ -1,0 +1,58 @@
+# 유튜브 클립 생성 시스템 - .gitignore
+
+# 다운로드된 영상 파일들
+downloads/
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+
+# 오디오 파일들
+*.mp3
+*.m4a
+*.wav
+*.flac
+*.aac
+
+# 생성된 클립들
+clips/
+
+# Python 관련
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 가상환경
+videoclip_env/
+.venv/
+
+# IDE 설정 파일
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 로그 파일
+*.log
+logs/
+
+# 임시 파일
+*.tmp
+*.temp
+
+# OS 관련
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 개인 설정 (백업용으로 별도 관리)
+config_personal.yaml

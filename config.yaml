@@ -1,0 +1,16 @@
+# 유튜브 다운로더 및 클립 생성기 설정 파일
+
+download:
+  base_directory: downloads
+  merge_audio_video: false
+
+clips:
+  output_directory: clips      # 클립 전용 디렉토리
+  min_duration: 5.0
+  max_duration: 7.0
+  merge_clips: true
+  
+  # 클립 저장 구조
+  structure:
+    labels: ['funny', 'normal']
+    subdirs: ['video', 'audio', 'merged']
