@@ -1,0 +1,22 @@
+# 일괄처리 YouTube 다운로더 및 클립 생성기 설정 파일
+
+download:
+  base_directory: downloads
+  merge_audio_video: false
+
+clips:
+  output_directory: clips
+  min_duration: 5.0
+  max_duration: 7.0
+  merge_clips: true
+  
+  # 클립 저장 구조
+  structure:
+    labels: ['funny', 'normal']
+    subdirs: ['video', 'audio', 'merged']
+
+# 일괄 처리 설정
+batch:
+  skip_existing_downloads: true  # 이미 다운로드된 영상 건너뛰기
+  continue_on_error: true        # 오류 발생 시 다음 영상 계속 처리
+  show_progress: true            # 진행률 표시
