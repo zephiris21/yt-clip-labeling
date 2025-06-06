@@ -52,7 +52,8 @@ def extract_video_id(url):
     """YouTube URL에서 video_id 추출"""
     patterns = [
         r'(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/embed/)([^&\n?#]+)',
-        r'youtube\.com/watch\?.*v=([^&\n?#]+)'
+        r'youtube\.com/watch\?.*v=([^&\n?#]+)',
+        r'youtube\.com/shorts/([^&\n?#]+)'  # YouTube Shorts 패턴 추가
     ]
     
     for pattern in patterns:

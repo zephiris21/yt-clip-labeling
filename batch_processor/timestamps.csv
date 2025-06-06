@@ -1,25 +1,5 @@
 start,end,label,url
-# 침착맨 부대찌개 영상
-11:20,11:25,f,https://www.youtube.com/watch?v=SQSD3Udfbms
-5:26,5:32,n, https://www.youtube.com/watch?v=SQSD3Udfbms
 
-# AI 도 생선구이를사랑한다
-10.5,16.2,funny, https://www.youtube.com/watch?v=5bAOG1TIG0o
-45,51.5,normal, https://www.youtube.com/watch?v=5bAOG1TIG0o
-
-# 예시 데이터 (실제 사용 시 아래 주석 행들을 삭제하고 실제 데이터를 입력하세요)
-# https://www.youtube.com/watch?v=dQw4w9WgXcQ,10.5,16.2,funny
-# https://www.youtube.com/watch?v=dQw4w9WgXcQ,45.0,51.5,normal
-# https://www.youtube.com/watch?v=another_video_id,1:23,1:29,funny
-# 
-# 사용법:
-# - url: YouTube 영상 URL
-# - start: 시작 시간 (초 또는 mm:ss 또는 hh:mm:ss 형식)
-# - end: 종료 시간 (초 또는 mm:ss 또는 hh:mm:ss 형식)
-# - label: funny 또는 normal (f, n도 가능)
-#
-# 주의사항:
-# - 클립 길이는 5-7초로 제한됩니다
-# - 동일한 URL의 영상은 한 번만 다운로드됩니다
-
+# 본탄아메 먹는법
+20,27,f,https://www.youtube.com/shorts/y2D6rFwMAow
 
