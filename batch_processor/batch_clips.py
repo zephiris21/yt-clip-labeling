@@ -86,18 +86,40 @@ def group_clips_by_video(clips_data):
 
 def check_existing_download(video_id, config):
     """기존 다운로드 확인"""
-    video_dir = os.path.join(config['download']['base_directory'], video_id)
+    base_dir = config['download']['base_directory']
     
-    if not os.path.exists(video_dir):
+    # 모든 다운로드 폴더 확인
+    if not os.path.exists(base_dir):
         return False, None, None, None
     
-    # 비디오 파일 확인
-    video_files = glob.glob(os.path.join(video_dir, f"{video_id}_video.mp4"))
-    audio_files = glob.glob(os.path.join(video_dir, f"{video_id}_audio.*"))
-    
-    if video_files and audio_files:
-        # 기존 다운로드에서 제목 정보 가져오기 (파일명에서 추출은 복잡하므로 임시 제목 사용)
-        return True, video_files[0], audio_files[0], video_id
+    for folder_name in os.listdir(base_dir):
+        folder_path = os.path.join(base_dir, folder_name)
+        if not os.path.isdir(folder_path):
+            continue
+        
+        # video_info.txt 파일 확인
+        info_path = os.path.join(folder_path, "video_info.txt")
+        if os.path.exists(info_path):
+            # video_id 확인
+            try:
+                with open(info_path, 'r', encoding='utf-8') as f:
+                    info_content = f.read()
+                    if f"video_id: {video_id}" in info_content:
+                        # 비디오/오디오 파일 확인
+                        video_files = glob.glob(os.path.join(folder_path, f"*_video.mp4"))
+                        audio_files = glob.glob(os.path.join(folder_path, f"*_audio.*"))
+                        
+                        if video_files and audio_files:
+                            return True, video_files[0], audio_files[0], folder_name
+            except:
+                pass
+        
+        # 이전 방식으로도 확인 (video_info.txt가 없는 경우)
+        video_files = glob.glob(os.path.join(folder_path, f"{video_id}_video.mp4"))
+        if video_files:
+            audio_files = glob.glob(os.path.join(folder_path, f"{video_id}_audio.*"))
+            if audio_files:
+                return True, video_files[0], audio_files[0], folder_name
     
     return False, None, None, None
 
@@ -132,20 +154,25 @@ def parse_clip_filename(filename):
             'label': 'funny' if label_prefix == 'f' else 'normal',
             'clip_num': int(clip_num),
             'safe_title': safe_title,
+            'video_id': safe_title,  # 기존 파일에는 video_id가 없으므로 safe_title을 임시로 사용
             'start': float(start),
             'end': float(end),
             'filename': basename
         }
     return None
 
-def check_duplicate_clip(clip_data, existing_clips, safe_title):
+def check_duplicate_clip(clip_data, existing_clips, safe_title, video_id):
     """중복 클립 확인"""
     label = clip_data['label']
     start = clip_data['start']
     end = clip_data['end']
     
     for existing in existing_clips[label]:
-        if (existing['safe_title'] == safe_title and
+        # safe_title 또는 video_id가 일치하는지 확인 (둘 중 하나라도 일치하면 중복으로 간주)
+        title_match = existing.get('safe_title') == safe_title
+        id_match = existing.get('video_id') == video_id
+        
+        if ((title_match or id_match) and
             abs(existing['start'] - start) < 0.1 and
             abs(existing['end'] - end) < 0.1):
             return existing
@@ -179,7 +206,7 @@ def process_video_clips(video_id, clips, video_path, audio_path, safe_title, con
         print(f"🔄 클립 {i}/{len(clips)} 처리 중... ({clip_data['start']}-{clip_data['end']}초, {clip_data['label']})")
         
         # 중복 확인
-        duplicate = check_duplicate_clip(clip_data, existing_clips, safe_title)
+        duplicate = check_duplicate_clip(clip_data, existing_clips, safe_title, video_id)
         if duplicate:
             print(f"⚠️ 중복 클립 건너뛰기: {duplicate['filename']}")
             stats['skipped'] += 1
@@ -213,6 +240,7 @@ def process_video_clips(video_id, clips, video_path, audio_path, safe_title, con
                 'label': label,
                 'clip_num': clip_num,
                 'safe_title': safe_title,
+                'video_id': video_id,
                 'start': clip_data['start'],
                 'end': clip_data['end'],
                 'filename': f"{base_filename}.mp4"

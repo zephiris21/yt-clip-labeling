@@ -224,9 +224,12 @@ def download_youtube_video(url, video_id, config):
         print(f"📺 제목: {yt.title}")
         print(f"⏱️  길이: {yt.length}초 ({yt.length/60:.1f}분)")
         
-        # 영상별 디렉토리 생성 (video_id 사용)
+        # 안전한 제목 생성
+        safe_title = sanitize_filename(yt.title)
+        
+        # 영상별 디렉토리 생성 (제목 사용)
         base_dir = config['download']['base_directory']
-        video_dir = os.path.join(base_dir, video_id)
+        video_dir = os.path.join(base_dir, safe_title)
         os.makedirs(video_dir, exist_ok=True)
         
         # 최고화질 비디오 선택
@@ -242,9 +245,9 @@ def download_youtube_video(url, video_id, config):
             print("❌ 적절한 스트림을 찾을 수 없습니다.")
             return None
         
-        # 파일명 설정
-        video_filename = f"{video_id}_video.mp4"
-        audio_filename = f"{video_id}_audio.{audio_stream.subtype}"
+        # 파일명 설정 (safe_title 사용)
+        video_filename = f"{safe_title}_video.mp4"
+        audio_filename = f"{safe_title}_audio.{audio_stream.subtype}"
         
         video_path = os.path.join(video_dir, video_filename)
         audio_path = os.path.join(video_dir, audio_filename)
@@ -261,8 +264,13 @@ def download_youtube_video(url, video_id, config):
         
         print("✅ 다운로드 완료!")
         
-        # 안전한 제목 생성
-        safe_title = sanitize_filename(yt.title)
+        # 추가: video_id 정보 저장 (중복 체크용)
+        video_info_path = os.path.join(video_dir, "video_info.txt")
+        with open(video_info_path, 'w', encoding='utf-8') as f:
+            f.write(f"video_id: {video_id}\n")
+            f.write(f"title: {yt.title}\n")
+            f.write(f"safe_title: {safe_title}\n")
+            f.write(f"url: {url}\n")
         
         return {
             'video_dir': video_dir,
