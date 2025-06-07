@@ -6,13 +6,13 @@ download:
 
 clips:
   output_directory: clips
-  min_duration: 5.0
-  max_duration: 7.0
+  min_duration: 10.0
+  max_duration: 50.0
   merge_clips: true
   
   # 클립 저장 구조
   structure:
-    labels: ['funny', 'normal']
+    labels: ['funny', 'normal', 'boring']
     subdirs: ['video', 'audio', 'merged']
 
 # 일괄 처리 설정

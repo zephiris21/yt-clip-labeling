@@ -125,9 +125,9 @@ def check_existing_download(video_id, config):
 
 def get_existing_clips(clips_dir):
     """기존 클립 정보 스캔"""
-    existing_clips = {'funny': [], 'normal': []}
+    existing_clips = {'funny': [], 'normal': [], 'boring': []}
     
-    for label in ['funny', 'normal']:
+    for label in ['funny', 'normal', 'boring']:
         video_dir = os.path.join(clips_dir, label, 'video')
         if not os.path.exists(video_dir):
             continue
@@ -145,13 +145,21 @@ def parse_clip_filename(filename):
     basename = os.path.basename(filename)
     
     # f_001_safe_title_10.5_16.2.mp4 형식 파싱
-    pattern = r'([fn])_(\d+)_(.+)_([0-9.]+)_([0-9.]+)\.mp4'
+    pattern = r'([fnb])_(\d+)_(.+)_([0-9.]+)_([0-9.]+)\.mp4'
     match = re.match(pattern, basename)
     
     if match:
         label_prefix, clip_num, safe_title, start, end = match.groups()
+        # 라벨 프리픽스 결정 (f: funny, n: normal, b: boring)
+        if label_prefix == 'f':
+            label = 'funny'
+        elif label_prefix == 'n':
+            label = 'normal'
+        else:  # 'b'
+            label = 'boring'
+            
         return {
-            'label': 'funny' if label_prefix == 'f' else 'normal',
+            'label': label,
             'clip_num': int(clip_num),
             'safe_title': safe_title,
             'video_id': safe_title,  # 기존 파일에는 video_id가 없으므로 safe_title을 임시로 사용
@@ -193,7 +201,7 @@ def process_video_clips(video_id, clips, video_path, audio_path, safe_title, con
     
     # 출력 디렉토리 생성
     clips_dir = config['clips']['output_directory']
-    for label in ['funny', 'normal']:
+    for label in ['funny', 'normal', 'boring']:
         for subdir in ['video', 'audio']:
             os.makedirs(os.path.join(clips_dir, label, subdir), exist_ok=True)
         
@@ -217,7 +225,14 @@ def process_video_clips(video_id, clips, video_path, audio_path, safe_title, con
         clip_num = get_next_clip_number(existing_clips, label)
         
         # 파일명 생성 (safe_title 사용)
-        label_prefix = 'f' if label == 'funny' else 'n'
+        # 라벨에 따라 접두사 결정 (f: funny, n: normal, b: boring)
+        if label == 'funny':
+            label_prefix = 'f'
+        elif label == 'normal':
+            label_prefix = 'n'
+        else:  # boring
+            label_prefix = 'b'
+            
         base_filename = f"{label_prefix}_{clip_num:03d}_{safe_title}_{clip_data['start']}_{clip_data['end']}"
         
         output_paths = {
@@ -240,7 +255,7 @@ def process_video_clips(video_id, clips, video_path, audio_path, safe_title, con
                 'label': label,
                 'clip_num': clip_num,
                 'safe_title': safe_title,
-                'video_id': video_id,
+                'video_id': video_id,  # video_id 추가
                 'start': clip_data['start'],
                 'end': clip_data['end'],
                 'filename': f"{base_filename}.mp4"
@@ -345,6 +360,7 @@ def main():
         print(f"📁 클립 저장 위치:")
         print(f"   Funny: {os.path.join(clips_dir, 'funny', 'video')}")
         print(f"   Normal: {os.path.join(clips_dir, 'normal', 'video')}")
+        print(f"   Boring: {os.path.join(clips_dir, 'boring', 'video')}")
 
 if __name__ == "__main__":
     main()

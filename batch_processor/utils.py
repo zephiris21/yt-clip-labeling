@@ -86,7 +86,7 @@ def time_to_seconds(time_str):
     return float(time_str)
 
 def normalize_label(label):
-    """라벨 정규화 (f/F/funny -> funny, n/N/normal -> normal)"""
+    """라벨 정규화 (f/F/funny -> funny, n/N/normal -> normal, b/B/boring -> boring)"""
     if not label:
         return None
         
@@ -95,6 +95,8 @@ def normalize_label(label):
         return 'funny'
     elif label in ['n', 'normal']:
         return 'normal'
+    elif label in ['b', 'boring']:
+        return 'boring'
     else:
         return None
 
